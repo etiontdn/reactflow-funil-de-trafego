@@ -1,71 +1,107 @@
 "use client";
-import { useState, useCallback } from 'react';
+
+import { useState, useCallback, useMemo } from 'react';
 import { 
   ReactFlow, 
   applyNodeChanges, 
   applyEdgeChanges, 
   addEdge,
-  Node, 
-  Edge, 
   OnNodesChange, 
   OnEdgesChange, 
   OnConnect,
   NodeChange,
   EdgeChange,
-  Connection
+  Connection,
+  Edge,
+  ReactFlowProvider
 } from '@xyflow/react';
-import { nodeTypes } from '@/components/nodes'; // Importando o registro
+import { nodeTypes, AppNode, FunnelNodeData } from '@/components/nodes';
+import { NodePropertiesSheet } from '@/components/node-properties-sheet';
 import '@xyflow/react/dist/style.css';
  
-// Definimos o tipo inicial para garantir que o array comece tipado
-const initialNodes: Node[] = [
+const initialNodes: AppNode[] = [
   { 
     id: '1', 
-    type: 'trafficSource', // Usa o tipo que definimos
+    type: 'trafficSource', 
     position: { x: 100, y: 100 }, 
-    data: { label: 'Facebook Ads', source: 'facebook' } 
+    data: { 
+      label: 'Facebook Ads', 
+      enabled: true,
+      conversao: 0,
+      numeroMedioEsperado: 0
+    } 
   },
-  { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
 ];
-const initialEdges: Edge[] = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
+
+const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
  
 export default function App() {
-  // Passamos os tipos Node e Edge para o useState
-  const [nodes, setNodes] = useState<Node[]>( initialNodes);
+  const [nodes, setNodes] = useState<AppNode[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
- 
-  // Usamos o tipo OnNodesChange para o callback completo
+  
+  // Estado para controlar qual nó está sendo editado no Sheet
+  const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
+
+  // Memo para encontrar o nó atual que está sendo editado
+  const editingNode = useMemo(() => 
+    nodes.find(n => n.id === editingNodeId) || null,
+    [nodes, editingNodeId]
+  );
+
   const onNodesChange: OnNodesChange = useCallback(
     (changes: NodeChange[]) => 
-      setNodes((nds) => applyNodeChanges(changes, nds)),
+      setNodes((nds) => applyNodeChanges(changes, nds) as AppNode[]),
     [],
   );
 
-  // Usamos o tipo OnEdgesChange para o callback completo
   const onEdgesChange: OnEdgesChange = useCallback(
     (changes: EdgeChange[]) => 
       setEdges((eds) => applyEdgeChanges(changes, eds)),
     [],
   );
 
-  // Usamos o tipo OnConnect ou Connection para os parâmetros
   const onConnect: OnConnect = useCallback(
     (params: Connection) => 
       setEdges((eds) => addEdge(params, eds)),
     [],
   );
+
+  // Função para atualizar os dados do nó vindo do Sheet
+  const handleUpdateNodeData = useCallback((id: string, newData: Partial<FunnelNodeData>) => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return { ...node, data: { ...node.data, ...newData } };
+        }
+        return node;
+      })
+    );
+  }, []);
  
   return (
     <div style={{ width: '100%', height: '100vh' }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        fitView
-      />
+      <ReactFlowProvider>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          // Abre o Sheet ao clicar no nó
+          onNodeClick={(_, node) => setEditingNodeId(node.id)}
+          // Fecha o Sheet ao clicar no fundo
+          onPaneClick={() => setEditingNodeId(null)}
+          fitView
+        />
+
+        {/* Componente Dinâmico de Propriedades */}
+        <NodePropertiesSheet 
+          node={editingNode}
+          onClose={() => setEditingNodeId(null)}
+          onUpdate={handleUpdateNodeData}
+        />
+      </ReactFlowProvider>
     </div>
   );
 }
