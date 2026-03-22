@@ -14,18 +14,24 @@ import {
   EdgeChange,
   Connection
 } from '@xyflow/react';
+import { nodeTypes } from '@/components/nodes'; // Importando o registro
 import '@xyflow/react/dist/style.css';
  
 // Definimos o tipo inicial para garantir que o array comece tipado
 const initialNodes: Node[] = [
-  { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } },
+  { 
+    id: '1', 
+    type: 'trafficSource', // Usa o tipo que definimos
+    position: { x: 100, y: 100 }, 
+    data: { label: 'Facebook Ads', source: 'facebook' } 
+  },
   { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
 ];
 const initialEdges: Edge[] = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
  
 export default function App() {
   // Passamos os tipos Node e Edge para o useState
-  const [nodes, setNodes] = useState<Node[]>(initialNodes);
+  const [nodes, setNodes] = useState<Node[]>( initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
  
   // Usamos o tipo OnNodesChange para o callback completo
@@ -54,6 +60,7 @@ export default function App() {
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
