@@ -9,8 +9,6 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowRight01Icon } from '@hugeicons/core-free-icons';
 
 const robotoHeading = Roboto({
     subsets: ["latin"],
