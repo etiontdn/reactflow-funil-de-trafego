@@ -13,10 +13,9 @@ export function AppSidebar() {
         <Sidebar collapsible="icon">
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>Reacflow: Funil de Tráfego</SidebarGroupLabel>
+                    <SidebarGroupLabel>Reactflow: Funil de Tráfego</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
