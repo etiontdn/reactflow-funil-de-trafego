@@ -1,4 +1,5 @@
 "use client"
+
 import { 
   Sidebar, 
   SidebarContent, 
@@ -6,8 +7,8 @@ import {
   SidebarGroupContent, 
   SidebarGroupLabel, 
   SidebarMenu, 
-  SidebarMenuItem,
-  SidebarMenuButton
+  SidebarMenuItem, 
+  SidebarMenuButton 
 } from "@/components/ui/sidebar";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Megaphone01Icon, BrowserIcon } from "@hugeicons/core-free-icons";
@@ -17,7 +18,12 @@ const availableNodes = [
   { type: 'page', label: 'Página/LP', icon: BrowserIcon },
 ];
 
-export function AppSidebar() {
+// Adicionamos a tipagem da prop
+interface AppSidebarProps {
+  onAddNode: (type: string) => void;
+}
+
+export function AppSidebar({ onAddNode }: AppSidebarProps) {
   const onDragStart = (event: React.DragEvent, nodeType: string) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
@@ -35,6 +41,8 @@ export function AppSidebar() {
                   <SidebarMenuButton 
                     draggable 
                     onDragStart={(e) => onDragStart(e, node.type)}
+                    // AQUI: Cria o nó no centro ao clicar
+                    onClick={() => onAddNode(node.type)}
                     className="cursor-grab active:cursor-grabbing"
                   >
                     <HugeiconsIcon icon={node.icon} className="size-4" />

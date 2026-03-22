@@ -3,20 +3,19 @@
 import { useState, useCallback, useRef } from 'react';
 import { 
   ReactFlow, 
-  addEdge,
-  useNodesState,
-  useEdgesState,
-  useReactFlow,
-  ReactFlowProvider,
-  type Connection,
-  type Edge,
+  addEdge, 
+  useNodesState, 
+  useEdgesState, 
+  useReactFlow, 
+  ReactFlowProvider, 
+  type Connection, 
+  type Edge, 
 } from '@xyflow/react';
 import { nodeTypes, AppNode } from '@/components/nodes';
 import { NodePropertiesSheet } from '@/components/node-properties-sheet';
 import { AppSidebar } from '@/components/app-sidebar';
 import '@xyflow/react/dist/style.css';
 
-// IDs únicos simples para exemplo
 let id = 0;
 const getId = () => `node_${id++}`;
 
@@ -25,13 +24,34 @@ function FunnelCanvas() {
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { screenToFlowPosition } = useReactFlow();
-  
+
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
   const editingNode = nodes.find(n => n.id === editingNodeId) || null;
 
+  // FUNÇÃO PARA ADICIONAR NO CENTRO
+  const onAddNode = useCallback((type: string) => {
+    const position = screenToFlowPosition({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+    });
+
+    const newNode: AppNode = {
+      id: getId(),
+      type,
+      position,
+      data: { 
+        label: type === 'trafficSource' ? 'Nova Origem' : 'Nova Página', 
+        enabled: true, 
+        conversao: 0, 
+        numeroMedioEsperado: 0 
+      },
+    };
+
+    setNodes((nds) => nds.concat(newNode));
+  }, [screenToFlowPosition, setNodes]);
+
   const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
-  // --- Lógica de Drag & Drop ---
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
@@ -40,12 +60,9 @@ function FunnelCanvas() {
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
-
       const type = event.dataTransfer.getData('application/reactflow');
-
       if (!type) return;
 
-      // Converte a posição do mouse para a posição no canvas
       const position = screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
@@ -56,13 +73,12 @@ function FunnelCanvas() {
         type,
         position,
         data: { 
-          label: type === 'trafficSource' ? 'Nova Origem' : 'Nova Página',
-          enabled: true,
-          conversao: 0,
+          label: type === 'trafficSource' ? 'Nova Origem' : 'Nova Página', 
+          enabled: true, 
+          conversao: 0, 
           numeroMedioEsperado: 0 
         },
       };
-
       setNodes((nds) => nds.concat(newNode));
     },
     [screenToFlowPosition, setNodes],
@@ -70,8 +86,9 @@ function FunnelCanvas() {
 
   return (
     <div className="w-full h-screen" ref={reactFlowWrapper}>
-      <AppSidebar />
-
+      {/* Passamos a função para a Sidebar */}
+      <AppSidebar onAddNode={onAddNode} />
+      
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -85,17 +102,15 @@ function FunnelCanvas() {
         deleteKeyCode={["Delete", "Backspace"]}
         fitView
       />
-
       <NodePropertiesSheet 
-        node={editingNode}
-        onClose={() => setEditingNodeId(null)}
-        onUpdate={(id, data) => setNodes(nds => nds.map(n => n.id === id ? { ...n, data: { ...n.data, ...data } } : n))}
+        node={editingNode} 
+        onClose={() => setEditingNodeId(null)} 
+        onUpdate={(id, data) => setNodes(nds => nds.map(n => n.id === id ? { ...n, data: { ...n.data, ...data } } : n))} 
       />
     </div>
   );
 }
 
-// O Provider precisa estar POR FORA para o useReactFlow funcionar no onDrop
 export default function App() {
   return (
     <ReactFlowProvider>
