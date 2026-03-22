@@ -13,7 +13,7 @@ export function AppSidebar() {
         <Sidebar collapsible="icon">
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>Reactflow: Funil de Tráfego</SidebarGroupLabel>
+                    <SidebarGroupLabel className="text-lg mt-4">Reactflow: Funil de Tráfego</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                         </SidebarMenu>
