@@ -102,7 +102,7 @@ export function BaseNode({ id, selected, data, children, title }: BaseNodeProps)
             <span className="text-[10px] font-bold text-muted-foreground uppercase">
               {title}
             </span>
-            <span className="text-sm font-semibold truncate max-w-30">
+            <span className="text-sm font-semibold truncate max-w-50">
               {label}
             </span>
           </div>
