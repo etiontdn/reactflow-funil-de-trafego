@@ -90,8 +90,6 @@ export default function App() {
           onConnect={onConnect}
           // Abre o Sheet ao clicar no nó
           onNodeClick={(_, node) => setEditingNodeId(node.id)}
-          // Fecha o Sheet ao clicar no fundo
-          onPaneClick={() => setEditingNodeId(null)}
           fitView
         />
 
