@@ -1,105 +1,105 @@
 "use client";
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { 
   ReactFlow, 
-  applyNodeChanges, 
-  applyEdgeChanges, 
   addEdge,
-  OnNodesChange, 
-  OnEdgesChange, 
-  OnConnect,
-  NodeChange,
-  EdgeChange,
-  Connection,
-  Edge,
-  ReactFlowProvider
+  useNodesState,
+  useEdgesState,
+  useReactFlow,
+  ReactFlowProvider,
+  type Connection,
+  type Edge,
 } from '@xyflow/react';
-import { nodeTypes, AppNode, FunnelNodeData } from '@/components/nodes';
+import { nodeTypes, AppNode } from '@/components/nodes';
 import { NodePropertiesSheet } from '@/components/node-properties-sheet';
+import { AppSidebar } from '@/components/app-sidebar';
 import '@xyflow/react/dist/style.css';
- 
-const initialNodes: AppNode[] = [
-  { 
-    id: '1', 
-    type: 'trafficSource', 
-    position: { x: 100, y: 100 }, 
-    data: { 
-      label: 'Facebook Ads', 
-      enabled: true,
-      conversao: 0,
-      numeroMedioEsperado: 0
-    } 
-  },
-];
 
-const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
- 
-export default function App() {
-  const [nodes, setNodes] = useState<AppNode[]>(initialNodes);
-  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+// IDs únicos simples para exemplo
+let id = 0;
+const getId = () => `node_${id++}`;
+
+function FunnelCanvas() {
+  const reactFlowWrapper = useRef<HTMLDivElement>(null);
+  const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const { screenToFlowPosition } = useReactFlow();
   
-  // Estado para controlar qual nó está sendo editado no Sheet
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
+  const editingNode = nodes.find(n => n.id === editingNodeId) || null;
 
-  // Memo para encontrar o nó atual que está sendo editado
-  const editingNode = useMemo(() => 
-    nodes.find(n => n.id === editingNodeId) || null,
-    [nodes, editingNodeId]
-  );
+  const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
-  const onNodesChange: OnNodesChange = useCallback(
-    (changes: NodeChange[]) => 
-      setNodes((nds) => applyNodeChanges(changes, nds) as AppNode[]),
-    [],
-  );
-
-  const onEdgesChange: OnEdgesChange = useCallback(
-    (changes: EdgeChange[]) => 
-      setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [],
-  );
-
-  const onConnect: OnConnect = useCallback(
-    (params: Connection) => 
-      setEdges((eds) => addEdge(params, eds)),
-    [],
-  );
-
-  // Função para atualizar os dados do nó vindo do Sheet
-  const handleUpdateNodeData = useCallback((id: string, newData: Partial<FunnelNodeData>) => {
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === id) {
-          return { ...node, data: { ...node.data, ...newData } };
-        }
-        return node;
-      })
-    );
+  // --- Lógica de Drag & Drop ---
+  const onDragOver = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
   }, []);
- 
-  return (
-    <div style={{ width: '100%', height: '100vh' }}>
-      <ReactFlowProvider>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          nodeTypes={nodeTypes}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          // Abre o Sheet ao clicar no nó
-          onNodeClick={(_, node) => setEditingNodeId(node.id)}
-          fitView
-        />
 
-        {/* Componente Dinâmico de Propriedades */}
-        <NodePropertiesSheet 
-          node={editingNode}
-          onClose={() => setEditingNodeId(null)}
-          onUpdate={handleUpdateNodeData}
-        />
-      </ReactFlowProvider>
+  const onDrop = useCallback(
+    (event: React.DragEvent) => {
+      event.preventDefault();
+
+      const type = event.dataTransfer.getData('application/reactflow');
+
+      if (!type) return;
+
+      // Converte a posição do mouse para a posição no canvas
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+
+      const newNode: AppNode = {
+        id: getId(),
+        type,
+        position,
+        data: { 
+          label: type === 'trafficSource' ? 'Nova Origem' : 'Nova Página',
+          enabled: true,
+          conversao: 0,
+          numeroMedioEsperado: 0 
+        },
+      };
+
+      setNodes((nds) => nds.concat(newNode));
+    },
+    [screenToFlowPosition, setNodes],
+  );
+
+  return (
+    <div className="w-full h-screen" ref={reactFlowWrapper}>
+      <AppSidebar />
+
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={nodeTypes}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+        onNodeClick={(_, node) => setEditingNodeId(node.id)}
+        deleteKeyCode={["Delete", "Backspace"]}
+        fitView
+      />
+
+      <NodePropertiesSheet 
+        node={editingNode}
+        onClose={() => setEditingNodeId(null)}
+        onUpdate={(id, data) => setNodes(nds => nds.map(n => n.id === id ? { ...n, data: { ...n.data, ...data } } : n))}
+      />
     </div>
+  );
+}
+
+// O Provider precisa estar POR FORA para o useReactFlow funcionar no onDrop
+export default function App() {
+  return (
+    <ReactFlowProvider>
+      <FunnelCanvas />
+    </ReactFlowProvider>
   );
 }

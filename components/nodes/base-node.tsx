@@ -40,7 +40,7 @@ export function BaseNode({ id, selected, data, children, title }: BaseNodeProps)
       <NodeToolbar 
         isVisible={selected} 
         position={Position.Top} 
-        className="flex gap-1.5 bg-background border shadow-md p-1 rounded-md"
+        className="flex z-10 gap-1.5 bg-background border shadow-md p-1 rounded-md"
       >
         {/* Tooltip Ativar/Desativar */}
         <Tooltip>

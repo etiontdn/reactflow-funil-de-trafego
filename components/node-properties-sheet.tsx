@@ -29,12 +29,14 @@ export function NodePropertiesSheet({
     const PropertiesComponent = nodePropertiesComponents[node.type as string];
 
     return (
-        <Sheet open={!!node} onOpenChange={(open) => !open && onClose()}>
+        <Sheet open={!!node} onOpenChange={(open) => !open && onClose()}
+        modal={false}>
             <SheetContent
                 side="right"
                 className="w-87.5 sm:w-100"
                 onPointerDownOutside={(e) => e.preventDefault()}
                 onInteractOutside={(e) => e.preventDefault()}
+                onOpenAutoFocus={(e) => e.preventDefault()}
             >
                 <SheetHeader className="mb-6">
                     <SheetTitle className="text-xl">Propriedades</SheetTitle>

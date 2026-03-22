@@ -7,7 +7,6 @@ import {
     SidebarTrigger,
     SidebarInset,
 } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const robotoHeading = Roboto({
@@ -41,7 +40,6 @@ export default function RootLayout({
             <body className="min-h-full flex flex-col">
                 <TooltipProvider>
                     <SidebarProvider>
-                        <AppSidebar />
                         <SidebarTrigger  className="self-center" />
                         <SidebarInset>{children}</SidebarInset>
                     </SidebarProvider>
