@@ -1,12 +1,13 @@
+import { PageNode, PagePropertiesType, PageProperties } from "./page-node";
 import { TrafficSourceNode, TrafficSourceProperties, TrafficSourcePropertiesType } from "./traffic-source";
 import type { Node, NodeTypes } from "@xyflow/react";
 
 // União de propriedades de todos os tipos de nós
-// Conforme você criar novos nós (ex: PagePropertiesType), adicione aqui com "&" ou "|"
 export type FunnelNodeData = {
   label: string;
   enabled: boolean;
-} & Partial<TrafficSourcePropertiesType>; 
+  output?: number;
+} & Partial<TrafficSourcePropertiesType> & Partial<PagePropertiesType>; 
 // Usamos Partial para que as propriedades específicas sejam opcionais na base global
 
 export type AppNode = Node<FunnelNodeData>;
@@ -18,8 +19,10 @@ export interface NodePropertiesProps {
 
 export const nodeTypes: NodeTypes = {
   trafficSource: TrafficSourceNode,
+  page: PageNode,
 };
 
 export const nodePropertiesComponents: Record<string, React.ComponentType<NodePropertiesProps>> = {
   trafficSource: TrafficSourceProperties,
+  page: PageProperties,
 };

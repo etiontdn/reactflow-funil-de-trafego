@@ -37,6 +37,7 @@ function FunnelCanvas() {
                 enabled: true,
                 acessosEsperados: 1000, // Valor default
                 taxaConversao: 3, // Valor default (ex: 3% de CTR)
+                output: 30, // Valor default (1000 * 3%)
             },
         },
     ];
