@@ -3,13 +3,13 @@ import { PageNode, PageProperties, PagePropertiesType } from "./page-node";
 import { FormNode, FormProperties, FormPropertiesType } from "./form-node";
 import { CheckoutNode, CheckoutProperties, CheckoutPropertiesType } from "./checkout-node";
 import { SumNode } from "./sum-node";
+import { MaxNode } from "./max-node"; // Import novo
 import type { Node, NodeTypes } from "@xyflow/react";
 
-// Contrato base para todos os nós do funil
 export type FunnelNodeData = {
   label: string;
   enabled: boolean;
-  output?: number; // Valor numérico ou monetário passado adiante
+  output?: number;
 } & Partial<TrafficSourcePropertiesType> 
   & Partial<PagePropertiesType>
   & Partial<FormPropertiesType>
@@ -22,20 +22,20 @@ export interface NodePropertiesProps {
   updateData: (newData: Partial<FunnelNodeData>) => void;
 }
 
-// Registro dos componentes visuais que aparecem no Canvas
 export const nodeTypes: NodeTypes = {
   trafficSource: TrafficSourceNode,
   page: PageNode,
   form: FormNode,
   checkout: CheckoutNode,
   sum: SumNode,
+  max: MaxNode, // Registro aqui
 };
 
-// Registro dos componentes de formulário que aparecem no Sheet lateral
 export const nodePropertiesComponents: Record<string, React.ComponentType<NodePropertiesProps>> = {
   trafficSource: TrafficSourceProperties,
   page: PageProperties,
   form: FormProperties,
   checkout: CheckoutProperties,
-  sum: () => null, // Nó utilitário não possui propriedades específicas
+  sum: () => null,
+  max: () => null, // Nó utilitário
 };

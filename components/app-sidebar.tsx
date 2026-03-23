@@ -12,7 +12,7 @@ import {
   SidebarHeader
 } from "@/components/ui/sidebar";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Megaphone01Icon, Note01Icon, BrowserIcon, Money01Icon, PlusSignIcon } from "@hugeicons/core-free-icons";
+import { Megaphone01Icon, Note01Icon, BrowserIcon, Money01Icon, PlusSignIcon, ArrowUpDoubleIcon } from "@hugeicons/core-free-icons";
 
 const availableNodes = [
   { type: 'trafficSource', label: 'Origem de Tráfego', icon: Megaphone01Icon },
@@ -20,6 +20,7 @@ const availableNodes = [
   { type: 'form', label: 'Formulário', icon: Note01Icon },
   { type: 'checkout', label: 'Checkout/Venda', icon: Money01Icon },
   { type: 'sum', label: 'Agrupador', icon: PlusSignIcon },
+  { type: 'max', label: 'Máximo', icon: ArrowUpDoubleIcon },
 ];
 
 // Adicionamos a tipagem da prop
