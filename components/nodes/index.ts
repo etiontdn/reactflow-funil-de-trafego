@@ -3,7 +3,8 @@ import { PageNode, PageProperties, PagePropertiesType } from "./page-node";
 import { FormNode, FormProperties, FormPropertiesType } from "./form-node";
 import { CheckoutNode, CheckoutProperties, CheckoutPropertiesType } from "./checkout-node";
 import { SumNode } from "./sum-node";
-import { MaxNode } from "./max-node"; // Import novo
+import { MaxNode } from "./max-node";
+import { CommentNode, CommentProperties, CommentPropertiesType } from "./comment-node";
 import type { Node, NodeTypes } from "@xyflow/react";
 
 export type FunnelNodeData = {
@@ -11,9 +12,10 @@ export type FunnelNodeData = {
   enabled: boolean;
   output?: number;
 } & Partial<TrafficSourcePropertiesType> 
-  & Partial<PagePropertiesType>
-  & Partial<FormPropertiesType>
-  & Partial<CheckoutPropertiesType>;
+  & Partial<PagePropertiesType> 
+  & Partial<FormPropertiesType> 
+  & Partial<CheckoutPropertiesType>
+  & Partial<CommentPropertiesType>;
 
 export type AppNode = Node<FunnelNodeData>;
 
@@ -28,7 +30,8 @@ export const nodeTypes: NodeTypes = {
   form: FormNode,
   checkout: CheckoutNode,
   sum: SumNode,
-  max: MaxNode, // Registro aqui
+  max: MaxNode,
+  comment: CommentNode,
 };
 
 export const nodePropertiesComponents: Record<string, React.ComponentType<NodePropertiesProps>> = {
@@ -37,5 +40,6 @@ export const nodePropertiesComponents: Record<string, React.ComponentType<NodePr
   form: FormProperties,
   checkout: CheckoutProperties,
   sum: () => null,
-  max: () => null, // Nó utilitário
+  max: () => null,
+  comment: CommentProperties,
 };

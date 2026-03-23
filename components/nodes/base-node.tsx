@@ -19,9 +19,10 @@ interface BaseNodeProps extends NodeProps {
   children: React.ReactNode;
   title: string;
   icon?: IconSvgElement;
+  className?: string;
 }
 
-export function BaseNode({ id, selected, data, children, title, icon }: BaseNodeProps) {
+export function BaseNode({ id, selected, data, children, title, icon, className }: BaseNodeProps) {
   const { deleteElements, setNodes } = useReactFlow();
   const { enabled = true, label } = data as FunnelNodeData;
 
@@ -95,7 +96,8 @@ export function BaseNode({ id, selected, data, children, title, icon }: BaseNode
       <div className={cn(
         "px-4 py-3 shadow-lg rounded-xl bg-card border transition-all min-w-45",
         selected ? "border-primary ring-1 ring-primary/20" : "border-border",
-        !enabled && "opacity-50 grayscale contrast-75 border-dashed shadow-none"
+        !enabled && "opacity-50 grayscale contrast-75 border-dashed shadow-none",
+        className ? className : ""
       )}>
         <div className="flex items-center gap-3">
           {icon && (
