@@ -1,5 +1,5 @@
 import { NodeToolbar, useReactFlow, Position, type NodeProps } from "@xyflow/react";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { HugeiconsIcon, IconSvgElement } from "@hugeicons/react";
 import { 
   Delete02Icon, 
   Settings03Icon, 
@@ -18,9 +18,10 @@ import { FunnelNodeData } from "./index";
 interface BaseNodeProps extends NodeProps {
   children: React.ReactNode;
   title: string;
+  icon?: IconSvgElement;
 }
 
-export function BaseNode({ id, selected, data, children, title }: BaseNodeProps) {
+export function BaseNode({ id, selected, data, children, title, icon }: BaseNodeProps) {
   const { deleteElements, setNodes } = useReactFlow();
   const { enabled = true, label } = data as FunnelNodeData;
 
@@ -97,7 +98,11 @@ export function BaseNode({ id, selected, data, children, title }: BaseNodeProps)
         !enabled && "opacity-50 grayscale contrast-75 border-dashed shadow-none"
       )}>
         <div className="flex items-center gap-3">
-          {children}
+          {icon && (
+            <div className="rounded-lg p-2 bg-primary/10 flex items-center justify-center">
+              <HugeiconsIcon icon={icon} className="size-5 text-primary" />
+            </div>
+          )}
           <div className="flex flex-col">
             <span className="text-[10px] font-bold text-muted-foreground uppercase">
               {title}
@@ -105,7 +110,9 @@ export function BaseNode({ id, selected, data, children, title }: BaseNodeProps)
             <span className="text-sm font-semibold truncate max-w-50">
               {label}
             </span>
+            {children}
           </div>
+          
         </div>
       </div>
     </>

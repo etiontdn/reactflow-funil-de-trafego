@@ -21,7 +21,22 @@ const getId = () => `node_${id++}`;
 
 function FunnelCanvas() {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
+
+  const initialNodes: AppNode[] = [
+  { 
+    id: '1', 
+    type: 'trafficSource', 
+    position: { x: 250, y: 50 }, 
+    data: { 
+      label: 'Google Ads', 
+      enabled: true,
+      acessosEsperados: 1000, // Valor default
+      taxaConversao: 3,        // Valor default (ex: 3% de CTR)
+    } 
+  },
+];
+
+  const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { screenToFlowPosition } = useReactFlow();
 
@@ -40,10 +55,8 @@ function FunnelCanvas() {
       type,
       position,
       data: { 
-        label: type === 'trafficSource' ? 'Nova Origem' : 'Nova Página', 
+        label: "", 
         enabled: true, 
-        conversao: 0, 
-        numeroMedioEsperado: 0 
       },
     };
 
@@ -73,10 +86,8 @@ function FunnelCanvas() {
         type,
         position,
         data: { 
-          label: type === 'trafficSource' ? 'Nova Origem' : 'Nova Página', 
+          label: "", 
           enabled: true, 
-          conversao: 0, 
-          numeroMedioEsperado: 0 
         },
       };
       setNodes((nds) => nds.concat(newNode));
