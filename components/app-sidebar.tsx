@@ -8,7 +8,8 @@ import {
   SidebarGroupLabel, 
   SidebarMenu, 
   SidebarMenuItem, 
-  SidebarMenuButton 
+  SidebarMenuButton,
+  SidebarHeader
 } from "@/components/ui/sidebar";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Megaphone01Icon, BrowserIcon } from "@hugeicons/core-free-icons";
@@ -30,7 +31,10 @@ export function AppSidebar({ onAddNode }: AppSidebarProps) {
   };
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="offcanvas">
+      <SidebarHeader>
+        <h1 className="text-xl ml-2 mt-2 font-bold tracking-wide text-sidebar-foreground">Reactflow: Funil de tráfego</h1>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Elementos do Funil</SidebarGroupLabel>

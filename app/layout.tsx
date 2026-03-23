@@ -39,10 +39,7 @@ export default function RootLayout({
         >
             <body className="min-h-full flex flex-col">
                 <TooltipProvider>
-                    <SidebarProvider>
-                        <SidebarTrigger  className="self-center" />
-                        <SidebarInset>{children}</SidebarInset>
-                    </SidebarProvider>
+                    {children}
                 </TooltipProvider>
             </body>
         </html>
