@@ -65,7 +65,7 @@ export function PageNode(props: NodeProps) {
         </div>
       </div>
 
-      <Handle type="target" position={Position.Top} className="bg-muted!" />
+      <Handle type="target" position={Position.Top} className="bg-primary!" />
       <Handle type="source" position={Position.Bottom} className="bg-primary!" />
     </BaseNode>
   );
