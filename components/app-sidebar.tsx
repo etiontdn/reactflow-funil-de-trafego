@@ -12,11 +12,12 @@ import {
   SidebarHeader
 } from "@/components/ui/sidebar";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Megaphone01Icon, BrowserIcon } from "@hugeicons/core-free-icons";
+import { Megaphone01Icon, Note01Icon ,BrowserIcon } from "@hugeicons/core-free-icons";
 
 const availableNodes = [
   { type: 'trafficSource', label: 'Origem de Tráfego', icon: Megaphone01Icon },
   { type: 'page', label: 'Página/LP', icon: BrowserIcon },
+  { type: 'form', label: 'Formulário', icon: Note01Icon },
 ];
 
 // Adicionamos a tipagem da prop
@@ -45,7 +46,6 @@ export function AppSidebar({ onAddNode }: AppSidebarProps) {
                   <SidebarMenuButton 
                     draggable 
                     onDragStart={(e) => onDragStart(e, node.type)}
-                    // AQUI: Cria o nó no centro ao clicar
                     onClick={() => onAddNode(node.type)}
                     className="cursor-grab active:cursor-grabbing"
                   >
