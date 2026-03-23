@@ -2,11 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Roboto } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import {
-    SidebarProvider,
-    SidebarTrigger,
-    SidebarInset,
-} from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const robotoHeading = Roboto({
@@ -38,9 +33,7 @@ export default function RootLayout({
             )}
         >
             <body className="min-h-full flex flex-col">
-                <TooltipProvider>
-                    {children}
-                </TooltipProvider>
+                <TooltipProvider>{children}</TooltipProvider>
             </body>
         </html>
     );
