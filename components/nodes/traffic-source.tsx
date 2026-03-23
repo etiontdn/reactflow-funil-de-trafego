@@ -9,6 +9,7 @@ import { NodePropertiesProps } from "./index";
 export type TrafficSourcePropertiesType = {
     acessosEsperados: number;
     taxaConversao: number;
+    output: number;
 };
 
 // Componente visual do nó
@@ -44,82 +45,49 @@ export function TrafficSourceNode(props: NodeProps) {
         </BaseNode>
     );
 }
+export function TrafficSourceProperties({ data, updateData }: NodePropertiesProps) {
+  const { acessosEsperados = 0, taxaConversao = 0 } = data as TrafficSourcePropertiesType;
 
-export function TrafficSourceProperties({
-    data,
-    updateData,
-}: NodePropertiesProps) {
-    const { acessosEsperados = 0, taxaConversao = 0 } =
-        data as TrafficSourcePropertiesType;
+  // Atualiza o output sempre que os valores mudarem
+  const handleChange = (fields: Partial<TrafficSourcePropertiesType>) => {
+    const rawAcessos = fields.acessosEsperados ?? acessosEsperados;
+    const rawTaxa = fields.taxaConversao ?? taxaConversao;
 
-    // Cálculo para feedback visual no formulário
-    const resultadoFinal = Math.round(
-        (acessosEsperados || 0) * ((taxaConversao || 0) / 100),
-    );
+    const validatedAcessos = Math.max(0, rawAcessos);
+    const validatedTaxa = Math.max(0, Math.min(100, rawTaxa));
 
-    return (
-        <div className="space-y-6">
-            <div className="grid gap-4 p-4 rounded-lg bg-primary/5 border border-primary/10">
-                <div className="grid gap-2">
-                    <Label htmlFor="acessos" className="text-primary">
-                        Acessos Totais Esperados
-                    </Label>
-                    <Input
-                        id="acessos"
-                        type="number"
-                        placeholder="Ex: 10000"
-                        value={acessosEsperados}
-                        onChange={(e) =>
-                            updateData({
-                                acessosEsperados: Number(e.target.value),
-                            })
-                        }
-                    />
-                </div>
+    const newOutput = Math.round(validatedAcessos * (validatedTaxa / 100));
 
-                <div className="grid gap-2">
-                    <Label htmlFor="taxa" className="text-primary">
-                        Taxa de Clique / Conversão (%)
-                    </Label>
-                    <div className="relative">
-                        <Input
-                            id="taxa"
-                            type="number"
-                            className="pr-8"
-                            value={taxaConversao}
-                            onChange={(e) => {
-                                const n = Math.max(
-                                    0,
-                                    Math.min(100, Number(e.target.value)),
-                                );
-                                updateData({
-                                    taxaConversao: n,
-                                });
-                            }}
-                            min={0}
-                            max={100}
-                        />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
-                            %
-                        </span>
-                    </div>
-                </div>
-            </div>
+    updateData({
+      ...fields,
+      acessosEsperados: validatedAcessos,
+      taxaConversao: validatedTaxa,
+      output: newOutput
+    });
+  };
 
-            <div className="flex items-center justify-between px-2 py-1">
-                <span className="text-xs text-muted-foreground italic font-medium">
-                    Resultado enviado à próxima etapa:
-                </span>
-                <span className="text-sm font-mono font-bold text-primary">
-                    {resultadoFinal.toLocaleString()} usuários
-                </span>
-            </div>
-
-            <div className="p-3 rounded-md bg-muted text-[11px] text-muted-foreground leading-relaxed">
-                <strong>Como funciona:</strong> Este nó injeta o volume inicial
-                no funil. A próxima etapa (Página) receberá este número de
-                usuários como tráfego de entrada.
-            </div>
+  return (
+    <div className="space-y-6">
+      <div className="grid gap-4 p-4 rounded-lg bg-primary/5 border border-primary/10">
+        <div className="grid gap-2">
+          <Label htmlFor="acessos">Acessos Totais</Label>
+          <Input 
+            id="acessos" 
+            type="number" 
+            value={acessosEsperados} 
+            onChange={(e) => handleChange({ acessosEsperados: Number(e.target.value) })} 
+          />
         </div>
-    );
+        <div className="grid gap-2">
+          <Label htmlFor="taxa">Taxa de Conversão (%)</Label>
+          <Input 
+            id="taxa" 
+            type="number" 
+            value={taxaConversao} 
+            onChange={(e) => handleChange({ taxaConversao: Number(e.target.value) })} 
+          />
+        </div>
+      </div>
+    </div>
+  );
 }
