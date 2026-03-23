@@ -22,12 +22,11 @@ export function PageNode(props: NodeProps) {
   
   const label = data.label === "" ? "Nova Página" : data.label;
 
-  const connections = useNodeConnections({
-    handleType: 'target',
-  });
+  const allConnections = useNodeConnections();
+  const targetConnections = allConnections.filter(conn => conn.target === id);
 
   const nodesData = useNodesData<AppNode>(
-    connections.map((connection) => connection.source)
+    targetConnections.map((conn) => conn.source)
   );
 
   const entradaTotal = nodesData.reduce((acc, sourceNode) => {
@@ -44,7 +43,7 @@ export function PageNode(props: NodeProps) {
   }, [saidaCalculada, id, data.output, updateNodeData]);
 
   return (
-    <BaseNode {...props} data={{ ...props.data, label }}  icon={BrowserIcon} title="Página">
+    <BaseNode {...props} data={{ ...props.data, label }} icon={BrowserIcon} title="Página">
       <div className="flex flex-col gap-1 mt-1">
         <div className="flex items-center justify-between gap-4">
           <span className="text-[9px] text-muted-foreground font-bold uppercase whitespace-nowrap">
@@ -54,7 +53,6 @@ export function PageNode(props: NodeProps) {
             {entradaTotal.toLocaleString()}
           </span>
         </div>
-        
         <div className="flex items-center justify-between gap-4 border-t border-border/40 pt-1">
           <span className="text-[9px] text-primary/80 font-bold uppercase">
             Saída
@@ -64,7 +62,6 @@ export function PageNode(props: NodeProps) {
           </span>
         </div>
       </div>
-
       <Handle type="target" position={Position.Top} className="bg-primary!" />
       <Handle type="source" position={Position.Bottom} className="bg-primary!" />
     </BaseNode>
@@ -81,9 +78,9 @@ export function PageProperties({ data, updateData }: NodePropertiesProps) {
           Taxa de Conversão da Página (%)
         </Label>
         <Input 
-          type="number"
+          type="number" 
           value={taxaConversao} 
-          onChange={(e) => updateData({ taxaConversao: Number(e.target.value) })}
+          onChange={(e) => updateData({ taxaConversao: Number(e.target.value) })} 
         />
       </div>
     </div>
