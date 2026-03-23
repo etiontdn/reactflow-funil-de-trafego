@@ -19,16 +19,21 @@ export function TrafficSourceNode(props: NodeProps) {
     const { acessosEsperados = 0 } = props.data as TrafficSourcePropertiesType;
 
     return (
-        <BaseNode {...props} data={{ label, enabled }} icon={Megaphone01Icon} title="Origem">
-            { acessosEsperados > 0 && (
-            <div className="flex flex-col justify-center">
-                <span className="text-[9px] text-muted-foreground font-bold uppercase">
-                    Volume Esperado
-                </span>
-                <span className="text-sm font-semibold truncate max-w-50">
-                    {acessosEsperados.toLocaleString()}
-                </span>
-            </div>
+        <BaseNode
+            {...props}
+            data={{ label, enabled }}
+            icon={Megaphone01Icon}
+            title="Origem"
+        >
+            {acessosEsperados > 0 && (
+                <div className="flex flex-col justify-center">
+                    <span className="text-[9px] text-muted-foreground font-bold uppercase">
+                        Volume Esperado
+                    </span>
+                    <span className="text-sm font-semibold truncate max-w-50">
+                        {acessosEsperados.toLocaleString()}
+                    </span>
+                </div>
             )}
 
             <Handle
@@ -83,11 +88,14 @@ export function TrafficSourceProperties({
                             className="pr-8"
                             value={taxaConversao}
                             onChange={(e) => {
-                                const n = Math.max(0, Math.min(100, Number(e.target.value)));
+                                const n = Math.max(
+                                    0,
+                                    Math.min(100, Number(e.target.value)),
+                                );
                                 updateData({
                                     taxaConversao: n,
-                                })}
-                            }
+                                });
+                            }}
                             min={0}
                             max={100}
                         />
