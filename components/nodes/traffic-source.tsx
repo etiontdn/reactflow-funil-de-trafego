@@ -82,11 +82,14 @@ export function TrafficSourceProperties({
                             type="number"
                             className="pr-8"
                             value={taxaConversao}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                                const n = Math.max(0, Math.min(100, Number(e.target.value)));
                                 updateData({
-                                    taxaConversao: Number(e.target.value),
-                                })
+                                    taxaConversao: n,
+                                })}
                             }
+                            min={0}
+                            max={100}
                         />
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
                             %
