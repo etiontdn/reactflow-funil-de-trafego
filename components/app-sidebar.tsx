@@ -20,7 +20,10 @@ import {
   PlusSignIcon, 
   ArrowUpDoubleIcon,
   Money01Icon,
-  Comment01Icon 
+  Comment01Icon,
+  InformationCircleIcon,
+  CursorPointer01Icon,
+  Cursor01Icon
 } from "@hugeicons/core-free-icons";
 import { ModeToggle } from "./mode-toggle"; // Importe o componente que criamos
 
@@ -48,7 +51,7 @@ export function AppSidebar({ onAddNode }: AppSidebarProps) {
     <Sidebar collapsible="offcanvas">
       <SidebarHeader>
         <h1 className="text-xl ml-2 mt-2 font-bold tracking-wide text-sidebar-foreground">
-          Reactflow: Funil
+          Reactflow: Funil de tráfego
         </h1>
       </SidebarHeader>
       
@@ -73,9 +76,48 @@ export function AppSidebar({ onAddNode }: AppSidebarProps) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-      </SidebarContent>
+        <SidebarGroup className="mt-auto pb-6">
+          <SidebarGroupLabel className="flex items-center gap-2 mb-2">
+            <HugeiconsIcon icon={InformationCircleIcon} className="size-4 text-primary" />
+            <span className="text-xs font-bold uppercase tracking-wider">Como usar</span>
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <div className="rounded-xl p-2 border bg-muted/40 shadow-sm border-primary/10">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="shrink-0 bg-primary/15 p-2 rounded-lg">
+                    <HugeiconsIcon icon={CursorPointer01Icon} className="size-4 text-primary" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs font-bold text-foreground">Ação Rápida</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Dê um <span className="font-bold text-primary">clique</span> no item para adicioná-lo ao centro.
+                    </p>
+                  </div>
+                </div>
 
-      {/* Rodapé com o botão de tema */}
+                <div className="flex items-center gap-3">
+                  <div className="shrink-0 bg-primary/15 p-2 rounded-lg">
+                    <HugeiconsIcon icon={Cursor01Icon} className="size-4 text-primary" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs font-bold text-foreground">Posicionamento</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      <span className="font-bold text-primary">Arraste</span> o item para o local desejado no mapa.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-4 pt-3 border-t border-border/60">
+                <p className="text-xs text-muted-foreground italic text-center leading-tight">
+                   Conecte os círculos coloridos para desenhar o fluxo.
+                </p>
+              </div>
+            </div>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
       <SidebarFooter className="border-t p-4 flex items-center justify-center">
         <ModeToggle />
       </SidebarFooter>
