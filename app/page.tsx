@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react"; // Adicionado useEffect
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import {
     ReactFlow,
     addEdge,
@@ -14,13 +14,14 @@ import {
 import { nodeTypes, AppNode } from "@/components/nodes";
 import { NodePropertiesSheet } from "@/components/node-properties-sheet";
 import { AppSidebar } from "@/components/app-sidebar";
-import { PlusSignIcon, ArrowUpDoubleIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
     SidebarTrigger,
     SidebarProvider,
     SidebarInset,
+    useSidebar,
 } from "@/components/ui/sidebar";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { PlusSignIcon } from "@hugeicons/core-free-icons";
 import "@xyflow/react/dist/style.css";
 
 const STORAGE_KEY = "funnel-flow-persistence-v1";
@@ -28,65 +29,34 @@ const getId = () =>
     `node_${Math.random().toString(36).substring(2, 9)}_${Date.now()}`;
 
 function FunnelCanvas() {
+    const { setOpen } = useSidebar();
     const reactFlowWrapper = useRef<HTMLDivElement>(null);
-    const { screenToFlowPosition, setViewport, getViewport } = useReactFlow();
-    const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-    const [isLoaded, setIsLoaded] = useState(false);
+    const { screenToFlowPosition, getViewport } = useReactFlow();
 
+    const initialData = useMemo(() => {
+        if (typeof window === "undefined") return null;
+        const saved = localStorage.getItem(STORAGE_KEY);
+        try {
+            return saved ? JSON.parse(saved) : null;
+        } catch (e) {
+            return null;
+        }
+    }, []);
+
+    const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>(
+        initialData?.nodes || [],
+    );
+    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(
+        initialData?.edges || [],
+    );
     const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
+
     const editingNode = nodes.find((n) => n.id === editingNodeId) || null;
 
     useEffect(() => {
-        const restoreFlow = () => {
-            const savedData = localStorage.getItem(STORAGE_KEY);
-
-            if (savedData) {
-                try {
-                    const {
-                        nodes: savedNodes,
-                        edges: savedEdges,
-                        viewport,
-                    } = JSON.parse(savedData);
-
-                    if (savedNodes) setNodes(savedNodes);
-                    if (savedEdges) setEdges(savedEdges);
-                    if (viewport) setViewport(viewport);
-                } catch (e) {
-                    console.error("Erro ao restaurar dados salvos:", e);
-                }
-            } else {
-                setNodes([
-                    {
-                        id: "first_node",
-                        type: "trafficSource",
-                        position: { x: 250, y: 50 },
-                        data: {
-                            label: "Google Ads",
-                            enabled: true,
-                            acessosEsperados: 1000,
-                            taxaConversao: 3,
-                            output: 30,
-                        },
-                    },
-                ]);
-            }
-            setIsLoaded(true);
-        };
-
-        restoreFlow();
-    }, [setNodes, setEdges, setViewport]);
-
-    useEffect(() => {
-        if (!isLoaded) return;
-
-        const flow = {
-            nodes,
-            edges,
-            viewport: getViewport(),
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(flow));
-    }, [nodes, edges, getViewport, isLoaded]);
+        const data = JSON.stringify({ nodes, edges, viewport: getViewport() });
+        localStorage.setItem(STORAGE_KEY, data);
+    }, [nodes, edges, getViewport]);
 
     const onAddNode = useCallback(
         (type: string) => {
@@ -94,19 +64,14 @@ function FunnelCanvas() {
                 x: window.innerWidth / 2,
                 y: window.innerHeight / 2,
             });
-
-            const newNode: AppNode = {
-                id: getId(),
-                type,
-                position,
-                data: {
-                    label: "",
-                    enabled: true,
-                    output: 0,
-                },
-            };
-
-            setNodes((nds) => nds.concat(newNode));
+            setNodes((nds) =>
+                nds.concat({
+                    id: getId(),
+                    type,
+                    position,
+                    data: { label: "", enabled: true, output: 0 },
+                }),
+            );
         },
         [screenToFlowPosition, setNodes],
     );
@@ -116,83 +81,65 @@ function FunnelCanvas() {
         [setEdges],
     );
 
-    const onDragOver = useCallback((event: React.DragEvent) => {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = "move";
-    }, []);
-
     const onDrop = useCallback(
         (event: React.DragEvent) => {
             event.preventDefault();
             const type = event.dataTransfer.getData("application/reactflow");
             if (!type) return;
-
             const position = screenToFlowPosition({
                 x: event.clientX,
                 y: event.clientY,
             });
-
-            const newNode: AppNode = {
-                id: getId(),
-                type,
-                position,
-                data: {
-                    label: "",
-                    enabled: true,
-                    output: 0,
-                },
-            };
-            setNodes((nds) => nds.concat(newNode));
+            setNodes((nds) =>
+                nds.concat({
+                    id: getId(),
+                    type,
+                    position,
+                    data: { label: "", enabled: true, output: 0 },
+                }),
+            );
         },
         [screenToFlowPosition, setNodes],
     );
 
-    // Evita renderizar o React Flow com estado vazio antes do load
-    if (!isLoaded) {
-        return <div className="w-full h-screen bg-background" />;
-    }
-
     return (
-        <SidebarProvider>
+        <>
             <AppSidebar onAddNode={onAddNode} />
+            <SidebarInset className="relative flex flex-col">
+                <header className="flex h-12 items-center border-b px-4 bg-background/50 backdrop-blur shrink-0 z-20">
+                    <SidebarTrigger />
+                    <div className="ml-4 h-4 w-px bg-border" />
+                    <span className="ml-4 text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+                        Editor de Funil
+                    </span>
+                </header>
 
-            <SidebarTrigger className="self-center" />
-            <SidebarInset>
-                <div className="w-full h-screen" ref={reactFlowWrapper}>
+                <div className="flex-1 relative" ref={reactFlowWrapper}>
                     {nodes.length === 0 && (
-                        <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
-                            <div className="flex flex-col items-center gap-4 max-w-sm text-center animate-in fade-in zoom-in duration-500">
-                                <div className="relative">
-                                    {/* Círculo pulsante de fundo */}
-                                    <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
-                                    <div className="relative bg-background border-2 border-dashed border-primary/50 rounded-full p-6 shadow-xl">
-                                        <HugeiconsIcon
-                                            icon={PlusSignIcon}
-                                            className="size-10 text-primary"
-                                        />
-                                    </div>
+                        <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/40 backdrop-blur-[2px]">
+                            <button
+                                onClick={() => setOpen(true)}
+                                className="group flex flex-col items-center gap-6 animate-in fade-in zoom-in duration-500"
+                            >
+                                <div className="relative bg-background border-2 border-dashed border-primary/40 rounded-full p-10 shadow-2xl group-hover:border-primary transition-all duration-300">
+                                    <HugeiconsIcon
+                                        icon={PlusSignIcon}
+                                        className="size-12 text-primary group-hover:rotate-90 transition-transform duration-500"
+                                    />
                                 </div>
-                                <div className="space-y-2 px-6">
-                                    <h3 className="text-xl font-bold tracking-tight">
-                                        Comece sua estratégia
+                                <div className="space-y-2 text-center">
+                                    <h3 className="text-2xl font-black tracking-tight text-foreground">
+                                        O canvas está vazio
                                     </h3>
-                                    <p className="text-sm text-muted-foreground leading-relaxed">
-                                        Arraste um elemento da lateral ou clique
-                                        em um botão para dar o primeiro passo no
-                                        seu funil.
+                                    <p className="text-sm text-muted-foreground max-w-[240px]">
+                                        Clique aqui para abrir os elementos e
+                                        desenhar seu fluxo.
                                     </p>
                                 </div>
-                                {/* Uma setinha visual apontando para a esquerda (opcional) */}
-                                <div className="flex items-center gap-2 text-primary font-medium text-xs uppercase tracking-widest mt-4">
-                                    <HugeiconsIcon
-                                        icon={ArrowUpDoubleIcon}
-                                        className="-rotate-90 size-4"
-                                    />
-                                    <span>Ver elementos</span>
-                                </div>
-                            </div>
+                            </button>
                         </div>
                     )}
+
                     <ReactFlow
                         nodes={nodes}
                         edges={edges}
@@ -201,11 +148,16 @@ function FunnelCanvas() {
                         onEdgesChange={onEdgesChange}
                         onConnect={onConnect}
                         onDrop={onDrop}
-                        onDragOver={onDragOver}
+                        onDragOver={(e) => {
+                            e.preventDefault();
+                            e.dataTransfer.dropEffect = "move";
+                        }}
                         onNodeClick={(_, node) => setEditingNodeId(node.id)}
+                        defaultViewport={initialData?.viewport}
+                        fitView={!initialData}
                         deleteKeyCode={["Delete", "Backspace"]}
-                        fitView
                     />
+
                     <NodePropertiesSheet
                         node={editingNode}
                         onClose={() => setEditingNodeId(null)}
@@ -221,14 +173,16 @@ function FunnelCanvas() {
                     />
                 </div>
             </SidebarInset>
-        </SidebarProvider>
+        </>
     );
 }
 
 export default function App() {
     return (
-        <ReactFlowProvider>
-            <FunnelCanvas />
-        </ReactFlowProvider>
+        <SidebarProvider>
+            <ReactFlowProvider>
+                <FunnelCanvas />
+            </ReactFlowProvider>
+        </SidebarProvider>
     );
 }
