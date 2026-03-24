@@ -48,7 +48,6 @@ export function TrafficSourceNode(props: NodeProps) {
 export function TrafficSourceProperties({ data, updateData }: NodePropertiesProps) {
   const { acessosEsperados = 0, taxaConversao = 0 } = data as TrafficSourcePropertiesType;
 
-  // Atualiza o output sempre que os valores mudarem
   const handleChange = (fields: Partial<TrafficSourcePropertiesType>) => {
     const rawAcessos = fields.acessosEsperados ?? acessosEsperados;
     const rawTaxa = fields.taxaConversao ?? taxaConversao;
@@ -87,6 +86,13 @@ export function TrafficSourceProperties({ data, updateData }: NodePropertiesProp
             onChange={(e) => handleChange({ taxaConversao: Number(e.target.value) })} 
           />
         </div>
+      </div>
+
+      <div className="px-1">
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Define o volume de pessoas e qual a porcentagem delas que realmente 
+          clicam ou avançam para a próxima etapa do seu funil.
+        </p>
       </div>
     </div>
   );

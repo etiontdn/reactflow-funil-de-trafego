@@ -100,6 +100,13 @@ export function CheckoutProperties({ data, updateData }: NodePropertiesProps) {
           onChange={(e) => updateData({ ticketMedio: Number(e.target.value) })} 
         />
       </div>
+
+      <div>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Calcula as vendas finais multiplicando a conversão pelo valor 
+          médio do produto, gerando o faturamento total.
+        </p>
+      </div>
     </div>
   );
 }

@@ -88,6 +88,12 @@ export function FormProperties({ data, updateData }: NodePropertiesProps) {
           onChange={(e) => updateData({ taxaConversao: Math.max(0, Math.min(100, Number(e.target.value))) })}
         />
       </div>
+      <div className="">
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Define a porcentagem de visitantes que preenchem seus dados 
+          e se tornam contatos (leads) na sua base.
+        </p>
+      </div>  
     </div>
   );
 }

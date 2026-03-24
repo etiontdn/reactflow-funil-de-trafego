@@ -83,6 +83,12 @@ export function PageProperties({ data, updateData }: NodePropertiesProps) {
           onChange={(e) => updateData({ taxaConversao: Number(e.target.value) })} 
         />
       </div>
+      <div>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Simula quantos visitantes que chegam nesta página realmente 
+          seguem para o próximo passo (Ex: clicar em um botão).
+        </p>
+      </div>
     </div>
   );
 }
