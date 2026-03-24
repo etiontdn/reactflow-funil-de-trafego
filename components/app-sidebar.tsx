@@ -19,6 +19,7 @@ import {
   BrowserIcon, 
   PlusSignIcon, 
   ArrowUpDoubleIcon,
+  Money01Icon,
   Comment01Icon 
 } from "@hugeicons/core-free-icons";
 import { ModeToggle } from "./mode-toggle"; // Importe o componente que criamos
@@ -27,6 +28,7 @@ const availableNodes = [
   { type: 'trafficSource', label: 'Origem de Tráfego', icon: Megaphone01Icon },
   { type: 'page', label: 'Página/LP', icon: BrowserIcon },
   { type: 'form', label: 'Formulário', icon: Note01Icon },
+  { type: 'checkout', label: 'Checkout', icon: Money01Icon },
   { type: 'sum', label: 'Agrupador', icon: PlusSignIcon },
   { type: 'max', label: 'Máximo', icon: ArrowUpDoubleIcon },
   { type: 'comment', label: 'Comentário', icon: Comment01Icon },
