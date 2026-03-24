@@ -8,23 +8,30 @@ import {
   SidebarGroupLabel, 
   SidebarMenu, 
   SidebarMenuItem, 
-  SidebarMenuButton,
-  SidebarHeader
+  SidebarMenuButton, 
+  SidebarHeader,
+  SidebarFooter // Adicione este import
 } from "@/components/ui/sidebar";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Megaphone01Icon, Note01Icon, BrowserIcon, Money01Icon, PlusSignIcon, ArrowUpDoubleIcon, Comment01Icon } from "@hugeicons/core-free-icons";
+import { 
+  Megaphone01Icon, 
+  Note01Icon, 
+  BrowserIcon, 
+  PlusSignIcon, 
+  ArrowUpDoubleIcon,
+  Comment01Icon 
+} from "@hugeicons/core-free-icons";
+import { ModeToggle } from "./mode-toggle"; // Importe o componente que criamos
 
 const availableNodes = [
   { type: 'trafficSource', label: 'Origem de Tráfego', icon: Megaphone01Icon },
   { type: 'page', label: 'Página/LP', icon: BrowserIcon },
   { type: 'form', label: 'Formulário', icon: Note01Icon },
-  { type: 'checkout', label: 'Checkout/Venda', icon: Money01Icon },
   { type: 'sum', label: 'Agrupador', icon: PlusSignIcon },
   { type: 'max', label: 'Máximo', icon: ArrowUpDoubleIcon },
   { type: 'comment', label: 'Comentário', icon: Comment01Icon },
 ];
 
-// Adicionamos a tipagem da prop
 interface AppSidebarProps {
   onAddNode: (type: string) => void;
 }
@@ -38,8 +45,11 @@ export function AppSidebar({ onAddNode }: AppSidebarProps) {
   return (
     <Sidebar collapsible="offcanvas">
       <SidebarHeader>
-        <h1 className="text-xl ml-2 mt-2 font-bold tracking-wide text-sidebar-foreground">Reactflow: Funil de tráfego</h1>
+        <h1 className="text-xl ml-2 mt-2 font-bold tracking-wide text-sidebar-foreground">
+          Reactflow: Funil
+        </h1>
       </SidebarHeader>
+      
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Elementos do Funil</SidebarGroupLabel>
@@ -62,6 +72,11 @@ export function AppSidebar({ onAddNode }: AppSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      {/* Rodapé com o botão de tema */}
+      <SidebarFooter className="border-t p-4 flex items-center justify-center">
+        <ModeToggle />
+      </SidebarFooter>
     </Sidebar>
   );
 }

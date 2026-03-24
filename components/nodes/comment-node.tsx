@@ -18,7 +18,7 @@ export function CommentNode(props: NodeProps) {
       {...props} 
       icon={Comment01Icon} 
       title="Anotação" 
-      className="bg-yellow-50/50 border-yellow-200 shadow-sm min-h-20"
+      className="shadow-sm min-h-20"
     >
       <div className="mt-2">
         <p className="text-[11px] text-muted-foreground italic leading-relaxed whitespace-pre-wrap max-w-40">

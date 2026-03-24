@@ -128,3 +128,23 @@
     @apply font-sans;
   }
 }
+
+.dark {
+  /* Garante que o fundo do React Flow use a cor do shadcn */
+  .react-flow {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  /* Deixa as linhas das conexões visíveis no escuro */
+  .react-flow__edge-path {
+    stroke: var(--border);
+  }
+
+  /* Ajusta os textos dos handles e controles */
+  .react-flow__controls-button {
+    background: var(--card);
+    fill: var(--foreground);
+    border-bottom: 1px solid var(--border);
+  }
+}

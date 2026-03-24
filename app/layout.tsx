@@ -3,6 +3,7 @@ import { Inter, Roboto } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const robotoHeading = Roboto({
     subsets: ["latin"],
@@ -23,7 +24,8 @@ export default function RootLayout({
 }>) {
     return (
         <html
-            lang="en"
+            lang="pt-BR"
+            suppressHydrationWarning
             className={cn(
                 "h-full",
                 "antialiased",
@@ -33,7 +35,14 @@ export default function RootLayout({
             )}
         >
             <body className="min-h-full flex flex-col">
-                <TooltipProvider>{children}</TooltipProvider>
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    <TooltipProvider>{children}</TooltipProvider>
+                </ThemeProvider>
             </body>
         </html>
     );
