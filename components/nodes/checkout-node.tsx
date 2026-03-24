@@ -86,7 +86,7 @@ export function CheckoutProperties({ data, updateData }: NodePropertiesProps) {
         <Input 
           type="number" 
           value={taxaConversao} 
-          onChange={(e) => updateData({ taxaConversao: Number(e.target.value) })} 
+          onChange={(e) => updateData({ taxaConversao: Math.max(0, Math.min(100, Number(e.target.value))) })}
         />
       </div>
 
@@ -97,7 +97,7 @@ export function CheckoutProperties({ data, updateData }: NodePropertiesProps) {
         <Input 
           type="number" 
           value={ticketMedio} 
-          onChange={(e) => updateData({ ticketMedio: Number(e.target.value) })} 
+          onChange={(e) => updateData({ ticketMedio: Math.max(0, Number(e.target.value)) })}
         />
       </div>
 

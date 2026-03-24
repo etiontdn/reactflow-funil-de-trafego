@@ -80,7 +80,7 @@ export function PageProperties({ data, updateData }: NodePropertiesProps) {
         <Input 
           type="number" 
           value={taxaConversao} 
-          onChange={(e) => updateData({ taxaConversao: Number(e.target.value) })} 
+          onChange={(e) => updateData({ taxaConversao: Math.max(0, Math.min(100, Number(e.target.value))) })}
         />
       </div>
       <div>
