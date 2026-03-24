@@ -147,6 +147,10 @@
     fill: var(--foreground);
     border-bottom: 1px solid var(--border);
   }
+
+  .react-flow__attribution {
+    background: rgba(0, 0, 0, 0) !important;
+  }
 }
 
 /* Customização Global dos Handles do React Flow */

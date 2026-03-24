@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react"; // Adicionado useEffect
 import {
     ReactFlow,
     addEdge,
@@ -21,36 +21,67 @@ import {
 } from "@/components/ui/sidebar";
 import "@xyflow/react/dist/style.css";
 
-let id = 0;
-const getId = () => `node_${id++}`;
+const STORAGE_KEY = "funnel-flow-persistence-v1";
+const getId = () => `node_${Math.random().toString(36).substring(2, 9)}_${Date.now()}`;
 
 function FunnelCanvas() {
     const reactFlowWrapper = useRef<HTMLDivElement>(null);
-
-    const initialNodes: AppNode[] = [
-        {
-            id: "1",
-            type: "trafficSource",
-            position: { x: 250, y: 50 },
-            data: {
-                label: "Google Ads",
-                enabled: true,
-                acessosEsperados: 1000, // Valor default
-                taxaConversao: 3, // Valor default (ex: 3% de CTR)
-                output: 30, // Valor default (1000 * 3%)
-            },
-        },
-    ];
-
-    const [nodes, setNodes, onNodesChange] =
-        useNodesState<AppNode>(initialNodes);
+    const { screenToFlowPosition, setViewport, getViewport } = useReactFlow();
+    const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-    const { screenToFlowPosition } = useReactFlow();
+    const [isLoaded, setIsLoaded] = useState(false); 
 
     const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
     const editingNode = nodes.find((n) => n.id === editingNodeId) || null;
 
-    // FUNÇÃO PARA ADICIONAR NO CENTRO
+    
+    useEffect(() => {
+        const restoreFlow = () => {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            
+            if (savedData) {
+                try {
+                    const { nodes: savedNodes, edges: savedEdges, viewport } = JSON.parse(savedData);
+                    
+                    if (savedNodes) setNodes(savedNodes);
+                    if (savedEdges) setEdges(savedEdges);
+                    if (viewport) setViewport(viewport);
+                } catch (e) {
+                    console.error("Erro ao restaurar dados salvos:", e);
+                }
+            } else {
+                
+                setNodes([{
+                    id: "first_node",
+                    type: "trafficSource",
+                    position: { x: 250, y: 50 },
+                    data: {
+                        label: "Google Ads",
+                        enabled: true,
+                        acessosEsperados: 1000,
+                        taxaConversao: 3,
+                        output: 30,
+                    },
+                }]);
+            }
+            setIsLoaded(true); 
+        };
+
+        restoreFlow();
+    }, [setNodes, setEdges, setViewport]);
+
+    
+    useEffect(() => {
+        if (!isLoaded) return; 
+
+        const flow = {
+            nodes,
+            edges,
+            viewport: getViewport(),
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(flow));
+    }, [nodes, edges, getViewport, isLoaded]);
+
     const onAddNode = useCallback(
         (type: string) => {
             const position = screenToFlowPosition({
@@ -65,6 +96,7 @@ function FunnelCanvas() {
                 data: {
                     label: "",
                     enabled: true,
+                    output: 0,
                 },
             };
 
@@ -101,12 +133,18 @@ function FunnelCanvas() {
                 data: {
                     label: "",
                     enabled: true,
+                    output: 0,
                 },
             };
             setNodes((nds) => nds.concat(newNode));
         },
         [screenToFlowPosition, setNodes],
     );
+
+    // Evita renderizar o React Flow com estado vazio antes do load
+    if (!isLoaded) {
+        return <div className="w-full h-screen bg-background" />;
+    }
 
     return (
         <SidebarProvider>
@@ -115,8 +153,6 @@ function FunnelCanvas() {
             <SidebarTrigger className="self-center" />
             <SidebarInset>
                 <div className="w-full h-screen" ref={reactFlowWrapper}>
-                    {/* Passamos a função para a Sidebar */}
-
                     <ReactFlow
                         nodes={nodes}
                         edges={edges}
